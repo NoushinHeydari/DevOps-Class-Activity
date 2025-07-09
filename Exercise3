@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#Exercise 3: Write a program that has the IP of a server and its User/Pass in front of the Script name and if it is pingable
+#sends its /etc/passwd file to /home/user/path of that server, otherwise a message displayed that the server is not accessible.
+
+# Check if IP, User, and Password are provided as arguments
+if [ -z "$1" ]  [ -z "$2" ]  [ -z "$3" ]; then
+  echo "Usage: $0 <IP_Address> <Username> <Password>"
+  exit 1
+fi
+
+IP_ADDRESS="$1"
+USERNAME="$2"
+PASSWORD="$3" # Warning: Storing password directly is insecure
+
+REMOTE_PATH="/home/$USERNAME/path" # This path needs to exist on the remote server
+
+# Check if the server is pingable
+echo "Pinging $IP_ADDRESS..."
+if ping -c 1 "$IP_ADDRESS" &> /dev/null; then
+  echo "Server $IP_ADDRESS is accessible. Attempting to send /etc/passwd..."
+  # Send /etc/passwd using scp (requires sshpass for password automation)
+  # IMPORTANT: sshpass is not recommended for production environments due to security risks.
+  # For secure environments, use SSH keys.
+
+  # You might need to install sshpass: sudo apt-get install sshpass
+  if command -v sshpass &> /dev/null; then
+    sshpass -p "$PASSWORD" scp /etc/passwd "$USERNAME"@"$IP_ADDRESS":"$REMOTE_PATH/passwd_backup_$(date +%Y%m%d%H%M%S)"
+    if [ $? -eq 0 ]; then
+      echo "/etc/passwd sent successfully to $IP_ADDRESS:$REMOTE_PATH"
+    else
+      echo "Failed to send /etc/passwd. Check permissions or remote path."
+    fi
+  else
+    echo "sshpass is not installed. Please install it or use SSH keys for secure transfer."
+    echo "Example for SSH keys: scp /etc/passwd $USERNAME@$IP_ADDRESS:$REMOTE_PATH"
+  fi
+else
+  echo "Server $IP_ADDRESS is not accessible. Cannot send file."
+fi
