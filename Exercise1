@@ -1,0 +1,15 @@
+#Exercise 1: Write a program that takes a number from the input, compares it to 10, and returns a message for each of the 3 modes (larger, equal, and smaller).
+
+#Bash
+#!/bin/bash
+
+echo "Please enter a number:"
+read num
+
+if [ "$num" -gt 10 ]; then
+  echo "The number $num is larger than 10."
+elif [ "$num" -lt 10 ]; then
+  echo "The number $num is smaller than 10."
+else
+  echo "The number $num is equal to 10."
+fi
