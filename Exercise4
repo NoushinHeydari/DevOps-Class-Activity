@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#Exercise 4: Write a program that prints from 5 to 50 on the screen.
+
+num=5
+while [ "$num" -le 50 ]; do
+  echo "$num"
+  num=$((num + 1))
+done
